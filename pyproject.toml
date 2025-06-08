@@ -3,10 +3,22 @@ name = "pymath"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = "3.12"
-dependencies = []
+requires-python = ">=3.12"
+dependencies = [
+    "jupyter>=1.1.1",
+    "notebook>=7.4.3",
+    "pandas>=2.3.0",
+    "polars>=1.30.0",
+    "scipy>=1.15.3",
+    "sympy>=1.14.0",
+]
 
 [tool.uv]
+index-strategy = "unsafe-best-match"
+extra-index-url = [
+"https://mirrors.aliyun.com/pypi/simple/",
+"https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple",
+]
 [tool.uv.pip]
 python-version = "3.12"
 index-strategy = "unsafe-best-match"
