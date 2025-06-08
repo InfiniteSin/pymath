@@ -1,0 +1,16 @@
+[project]
+name = "pymath"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+index-strategy = "unsafe-best-match"
+extra-index-url = [
+"https://mirrors.aliyun.com/pypi/simple/",
+"https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple",
+"https://mirrors.bfsu.edu.cn/pypi/web/simple",
+"https://mirror.nju.edu.cn/pypi/web/simple"
+]
