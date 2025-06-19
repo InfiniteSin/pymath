@@ -2,9 +2,10 @@
 
 from collections.abc import Callable
 from math import pi, sin
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.figure import Figure
 
 if TYPE_CHECKING:
@@ -315,7 +316,7 @@ def weather_subplots() -> None:
 
 
 # 通过 subplot2grid() 更灵活地创建子图
-def test_subplot2grid() -> None:
+def plot_subplot2grid() -> None:
     """使用 subplot2grid() 灵活创建子图."""
     # 修改全局字体库
     plt.rcParams["font.sans-serif"] = ["SimHei"]  # 将字体替换为黑体
@@ -329,14 +330,80 @@ def test_subplot2grid() -> None:
             ax.text(0.5, 0.5, f"子图{i + 1}", va="center", ha="center")
 
     fig: Figure = plt.figure()
-    ax1: Axes = plt.subplot2grid((3, 3), (0, 0), colspan=3)
-    ax2: Axes = plt.subplot2grid((3, 3), (1, 0), colspan=2)
-    ax3: Axes = plt.subplot2grid((3, 3), (1, 2), rowspan=2)
-    ax4: Axes = plt.subplot2grid((3, 3), (2, 0))
-    ax5: Axes = plt.subplot2grid((3, 3), (2, 1))
+    ax1: Axes = plt.subplot2grid((3, 3), (0, 0), colspan=3)  # noqa: F841
+    ax2: Axes = plt.subplot2grid((3, 3), (1, 0), colspan=2)  # noqa: F841
+    ax3: Axes = plt.subplot2grid((3, 3), (1, 2), rowspan=2)  # noqa: F841
+    ax4: Axes = plt.subplot2grid((3, 3), (2, 0))  # noqa: F841
+    ax5: Axes = plt.subplot2grid((3, 3), (2, 1))  # noqa: F841
 
     annotate_axes(fig)
 
+    plt.show()
+
+
+# Exercises
+# Exercise 5.1 绘制 $f(x) = x^2$ 曲线, x 取值区间 [-3, 3], 颜色为红色, 线宽为 2(默认为 1)
+def square_plot() -> None:
+    """绘制函数 $f(x)=x^2$ 的曲线.
+
+    函数: $f(x)=x^2$
+    取值范围: [-3, 3]
+    线条颜色: red
+    线条宽度: 2
+    图形对象大小: 8*4
+    """
+    fig: Figure = plt.figure(figsize=(8, 4))
+    ax: Axes = fig.add_subplot(1, 1, 1)
+    # x: list[float] = np.arange(-3, 3.001, 0.001).tolist()
+    x: list[float] = np.linspace(start=-3, stop=3, num=601, endpoint=True)
+    # print(min(x))
+    # print(max(x))
+    y: list[float] = [pow(i, 2) for i in x]
+    ax.plot(x, y, color="red", linewidth=2)  # 红线, 线宽为 2
+    ax.set_title(r"Func for $f(x)=x^2$")
+    ax.set_xlabel(r"$x$")
+    ax.set_ylabel(r"$y$")
+
+    plt.show()
+
+
+# Exercise 5.2 绘制函数 $f(x)=sin^2(x-2))e^{-x^2}$ 的曲线
+def func2_plot(func_configs: dict[str, Any], plot_configs: dict[str, Any]) -> None:
+    """绘制函数 $f(x)=sin^2(x-2))e^{-x^2}$ 的曲线.
+
+    函数: f(x)=sin^2(x-2))e^{-x^2}
+    取值范围: [0, 2]
+    线条颜色: black
+    线条宽度: 2
+    图形对象大小: 8*4
+
+    Args:
+        func_configs (dict[str, Any]): 函数配置
+        plot_configs (dict[str, str]): 图片对象配置
+
+    """
+    fig: Figure = plt.figure(figsize=(8, 4))
+    ax: Axes = fig.add_subplot(1, 1, 1)
+    x: list[float] = []
+    f: Callable = func_configs["f"]
+    start: float = func_configs["start"]
+    stop: float = func_configs["stop"]
+    step: float = func_configs["step"]
+    lab: str = func_configs["lab"]
+    i: float = start
+    while i <= stop:
+        x.append(i)
+        i += step
+    y: list[float] = [f(i) for i in x]
+
+    # 绘图
+    ax.plot(x, y, **plot_configs)
+    ax.set_xlabel(r"$ x $")
+    ax.set_ylabel(r"$ y $")
+    if lab is None:
+        ax.set_title("Plot for simple function")
+    else:
+        ax.set_title("Plot for func: " + lab)
     plt.show()
 
 
@@ -355,7 +422,24 @@ def main() -> None:
     # cn_chart()
     # weather_subplot()
     # weather_subplots()
-    test_subplot2grid()
+    # plot_subplot2grid()
+
+    # Exercises
+    # square_plot()
+
+    # Exercise 5.2
+    # func_configs: dict[str, Any] = {
+    #     "f": lambda x: pow(sin(x - 2), 2) * exp(-pow(x, 2)),
+    #     "start": 0,
+    #     "stop": 2,
+    #     "step": 0.001,
+    #     "lab": r"$f(x)=sin^2(x-2)e^{-x^2}$",
+    # }
+    # plot_configs: dict[str, Any] = {
+    #     "color": "black",
+    #     "linewidth": 2,
+    # }
+    # func2_plot(func_configs=func_configs, plot_configs=plot_configs)
 
 
 if __name__ == "__main__":
