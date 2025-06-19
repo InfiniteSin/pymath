@@ -1,7 +1,31 @@
 {
     "cSpell.words": [
+        "arrowprops",
         "cbrt",
         "dfdx",
-        "droptime"
+        "droptime",
+        "facecolor",
+        "figsize",
+        "fontproperties",
+        "fontsize",
+        "linechart",
+        "linestyle",
+        "markerfacecolor",
+        "markersize",
+        "ncols",
+        "nomarker",
+        "nrows",
+        "rowspan",
+        "setp",
+        "verticalalignment",
+        "xaxis",
+        "xlabel",
+        "xlim",
+        "xticks",
+        "xytext",
+        "yaxis",
+        "ylabel",
+        "ylim",
+        "yticks"
     ]
 }
