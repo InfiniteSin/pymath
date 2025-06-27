@@ -1,9 +1,15 @@
 """《Python玩转数学问题》Chapter 6 类和面向对象编程."""
 
+import math
 from math import isclose, pi, sin
-from typing import Callable  # noqa: UP035
+from typing import TYPE_CHECKING, Any, Callable  # noqa: UP035
 
+import matplotlib.pyplot as plt
+import sympy
 from scipy.constants import G
+
+if TYPE_CHECKING:
+    from matplotlib.axes import Axes
 
 
 class UniGravity:
@@ -185,6 +191,7 @@ class Student1:
         print(f"Student {self.name} has just got {credit} points of credits.")
 
 
+# 类与继承
 class SchoolMember2:
     """School member base class."""
 
@@ -192,10 +199,10 @@ class SchoolMember2:
 
     def __init__(self, name: str, age: int, gender: str) -> None:
         """Init attributes."""
-        # 将所有属性设为私有属性, 对外部修改封闭
-        self.name: str = name
-        self.age: int = age
-        self.gender: str = gender
+        # 将所有属性设为受保护属性, 对外部修改封闭
+        self._name: str = name
+        self._age: int = age
+        self._gender: str = gender
         self.__enroll()
 
     def __del__(self) -> None:
@@ -212,7 +219,7 @@ class SchoolMember2:
 
     def tell(self) -> None:
         """Represent all attributes and values."""
-        print(f"----{self.name}----")
+        print(f"----{self._name}----")
         for k, v in self.__dict__.items():
             print(k, v)
         print("----End----")
@@ -228,25 +235,22 @@ class Teacher2(SchoolMember2):
         Init extra attributes.
         """
         super().__init__(name, age, gender)  # 通过 super() 继承基类的属性
-        self.__name: str = self.name
-        self.__age: int = self.age
-        self.__gender: str = self.gender
-        self.__salary: float = float(salary)
-        self.__course: list[str] = []
+        self._salary: float = float(salary)
+        self._course: list[str] = []
         if isinstance(course, list):
-            self.__course.extend(course)
+            self._course.extend(course)
         else:
-            self.__course.append(course)
-        print(f"Teacher {self.__name} is registered.")
+            self._course.append(course)
+        print(f"Teacher {self._name} is registered.")
 
     def __del__(self) -> None:
         """Trigger when delete instance."""
         super().__del__()
-        print(f"Teacher {self.__name} is unregistered.")
+        print(f"Teacher {self._name} is unregistered.")
 
     def teaching(self) -> None:
         """Represent all cources the teacher is teaching."""
-        print(f"Teacher {self.__name} is teaching {', '.join(self.__course)}")
+        print(f"Teacher {self._name} is teaching {', '.join(self._course)}")
 
 
 class Student2(SchoolMember2):
@@ -259,27 +263,259 @@ class Student2(SchoolMember2):
         Init extra attributes.
         """
         super().__init__(name, age, gender)  # 通过 super() 继承基类的属性
-        self.__name: str = self.name
-        self.__age: int = self.age
-        self.__gender: str = self.gender
-        self.__tuition: float = float(tuition)
-        self.__course: list[str] = []
+        self._tuition: float = float(tuition)
+        self._course: list[str] = []
         if isinstance(course, list):
-            self.__course.extend(course)
+            self._course.extend(course)
         else:
-            self.__course.append(course)
-        self.__credit: int = 0
-        print(f"Student {self.__name} is registered.")
+            self._course.append(course)
+        self._credit: int = 0
+        print(f"Student {self._name} is registered.")
 
     def __del__(self) -> None:
         """Trigger when delete instance."""
         super().__del__()
-        print(f"Student {self.__name} is unregistered.")
+        print(f"Student {self._name} is unregistered.")
 
     def get_credit(self, credit: int) -> None:
         """Set credit."""
-        self.__credit += credit
-        print(f"Student {self.__name} has just got {credit} points of credits.")
+        self._credit += credit
+        print(f"Student {self._name} has just got {credit} points of credits.")
+
+
+# 继承与 MRO
+class Rectangle:
+    """矩形(基类).
+
+    Attrs:
+        length (float): 长
+        width (float): 宽
+
+    """
+
+    def __init__(self, length: float, width: float, **kwargs: dict[str, Any]) -> None:
+        """初始化矩形的边长."""
+        self._length: float = length
+        self._width: float = width
+        super().__init__(**kwargs)
+
+    def area(self) -> float:
+        """返回矩形面积."""
+        return self._length * self._width
+
+    def perimeter(self) -> float:
+        """返回矩形周长."""
+        return 2 * (self._length + self._width)
+
+
+class Square(Rectangle):
+    """正方形(继承矩形)."""
+
+    def __init__(self, length: float, **kwargs: dict[str, Any]) -> None:
+        """初始化正方形的边长."""
+        super().__init__(length=length, width=length, **kwargs)
+
+
+class Cube(Square):
+    """立方体(继承正方体)."""
+
+    def surface_area(self) -> float:
+        """返回立方体表面积."""
+        face_area = super().area()
+        return face_area * 6
+
+    def volume(self) -> float:
+        """返回立方体体积."""
+        face_area = super().area()
+        return face_area * self._length
+
+
+# 多重继承
+class Triangle:
+    """三角形(基类).
+
+    Attrs:
+        base (float): 三角形的底长
+        height (float): 三角形的高
+
+    """
+
+    def __init__(self, base: float, height: float, **kwargs: dict[str, Any]) -> None:
+        """初始化三角形的底边和高."""
+        self._base: float = base
+        self._height: float = height
+        super().__init__(**kwargs)
+
+    def tri_area(self) -> float:
+        """返回三角形面积."""
+        return 0.5 * self._base * self._height
+
+
+# RightPyramid(Triangle, Square) 的 MRO 顺序为 RightPyramid -> Triangle -> Square -> Rectangle -> object(通用基类)
+# 这会导致通过 super().area() 方法调用的 area() 是 Triangle 类中计算三角形面积的 area
+# 由于缺乏 height 属性会报错 AttributeError
+# 通过改变 RightPyramid 的继承签名, 可以改变 MRO 顺序
+class RightPyramid(Square, Triangle):
+    """金字塔(继承自三角形和正方形).
+
+    Attrs:
+        base (float): 底边长度
+        slant_height (float): 斜高, 斜面三角形底边上的高
+
+    """
+
+    def __init__(self, base: float, slant_height: float, **kwargs: dict[str, Any]) -> None:
+        """初始化金字塔的底边长度和斜高."""
+        self._base: float = base
+        self._slant_height: float = slant_height
+        kwargs["height"] = self._slant_height
+        kwargs["length"] = self._base
+        super().__init__(base=self._base, **kwargs)
+
+    def area(self) -> float:
+        """金字塔的表面积(底面积 + 四面三角形面积)."""
+        base_area: float = super().area()
+        perimeter: float = super().perimeter()
+        return 0.5 * perimeter * self._slant_height + base_area
+
+    def area2(self) -> float:
+        """计算金字塔的表面积, 使用 Triangle 类的面积方法结果."""
+        base_area: float = super().area()
+        triangle_area: float = super().tri_area()
+        return 4 * triangle_area + base_area
+
+
+# OOP 面向对象实例
+# 螺线
+class Spiral:
+    """螺线(基类).
+
+    Attrs:
+        theta (list[float]): 弧度
+        radii (list[float]): 极径
+
+    """
+
+    def __init__(self) -> None:
+        """初始化螺线的弧度及极径空列表."""
+        self._theta: list[float] = []  # 转角
+        self._radii: list[float] = []  # 轴长
+
+    def draw(self) -> None:
+        """绘制螺线."""
+        # 创建极坐标
+        ax: Axes = plt.axes((0.025, 0.025, 0.95, 0.95), polar=True)  # noqa: F841
+        plt.plot(self._theta, self._radii)
+
+        # 将默认角度转换为弧度
+        plt.thetagrids(
+            [0, 45, 90, 135, 180, 225, 270, 315],
+            [
+                "0",
+                f"{sympy.pi}/4",
+                f"{sympy.pi}/2",
+                f"3{sympy.pi}/4",
+                f"{sympy.pi}",
+                f"5{sympy.pi}/4",
+                f"3{sympy.pi}/2",
+                f"7{sympy.pi}",
+            ],
+        )
+        plt.show()
+
+
+class Archimedes(Spiral):
+    r"""阿基米德螺线.
+
+    极坐标方程: $r = a\theta + b (a != 0)$
+    """
+
+    def __init__(self, a: float, b: float) -> None:
+        """初始化阿基米德螺线的属性."""
+        super().__init__()
+        self._a: float = a
+        self._b: float = b
+        self.f()
+
+    def f(self) -> None:
+        """使用极坐标方程计算轴长和转角."""
+        N: int = 200
+        i: int = 0
+        while i < N:
+            t: float = i * 4 * math.pi / N
+            self._theta.append(t)
+            self._radii.append(self._a + self._b * t)
+            i += 1
+
+
+class Log(Spiral):
+    r"""对数螺线.
+
+    极坐标方程: $r = ae^(b\theta)$
+    """
+
+    def __init__(self, a: float, b: float) -> None:
+        """初始化对数螺线的属性."""
+        super().__init__()
+        self._a: float = a
+        self._b: float = b
+        self.f()
+
+    def f(self) -> None:
+        """使用极坐标方程计算轴长和转角."""
+        N: int = 800
+        i: int = 0
+        while i < N:
+            t: float = i * 10 * math.pi / N
+            self._theta.append(t)
+            self._radii.append(self._a * pow(math.e, self._b * t))
+            i += 1
+
+
+class Hyperbolic(Spiral):
+    r"""双曲螺线.
+
+    极坐标方程: $r = a/\theta$
+    """
+
+    def __init__(self, a: float) -> None:
+        """初始化双曲螺线的属性."""
+        super().__init__()
+        self._a: float = a
+        self.f()
+
+    def f(self) -> None:
+        """使用极坐标方程计算轴长和转角."""
+        N: int = 50
+        i: int = 1
+        while i < N:
+            t: float = i * math.pi / 10
+            self._theta.append(t)
+            self._radii.append(self._a / t)
+            i += 1
+
+
+class Fermat(Spiral):
+    r"""费马螺线.
+
+    极坐标方程: $r^2 = \theta * a^2$
+    """
+
+    def __init__(self, a: float) -> None:
+        """初始化费马螺线的属性."""
+        super().__init__()
+        self._a: float = a
+        self.f()
+
+    def f(self) -> None:
+        """使用极坐标方程计算轴长和转角."""
+        N: int = 500
+        i: int = 0
+        while i < N:
+            t: float = i * math.pi / 50
+            self._theta.append(t)
+            self._radii.append(self._a * math.sqrt(t))
+            i += 1
 
 
 def main() -> None:
@@ -293,12 +529,37 @@ def main() -> None:
     # print(ClassTemplate.static_method())
 
     # 通过公共基类减少大量代码重复情况, 子类仅需添加基类不存在的代码(属性、方法的额外实现、新方法)
-    s2 = Student2("Richard", 12, "M", "Math", 1200)
-    s2.tell()
-    del s2
-    t2 = Teacher2("Sam", 36, "F", "Math", 12000)
-    t2.tell()
-    del t2
+    # s2 = Student2("Richard", 12, "M", "Math", 1200)
+    # s2.tell()
+    # del s2
+    # t2 = Teacher2("Sam", 36, "F", "Math", 12000)
+    # t2.tell()
+    # del t2
+
+    # 连续继承
+    # cube = Cube(3)
+    # print(Cube.__mro__)
+    # print(cube.__dict__)
+    # print(
+    #     f"立方体 cube 的表面积为: {cube.surface_area()}\
+    #     \n             体积为: {cube.volume()}",
+    # )
+
+    # 多重继承
+    # pyramid: RightPyramid = RightPyramid(4, 5)
+    # print(RightPyramid.__mro__)
+    # print(f"金字塔 pyramid 的表面积为: {pyramid.area()}")
+    # print(f"金字塔 pyramid 的表面积为: {pyramid.area2()}")
+
+    # 螺线绘图
+    # a: Archimedes = Archimedes(10, 5)
+    # a.draw()
+    # l: Log = Log(20, 0.1)
+    # l.draw()
+    # h: Hyperbolic = Hyperbolic(1)
+    # h.draw()
+    # f: Fermat = Fermat(10)
+    # f.draw()
 
 
 if __name__ == "__main__":
