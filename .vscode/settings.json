@@ -15,6 +15,7 @@
         "markerfacecolor",
         "markersize",
         "ncols",
+        "ndarray",
         "nomarker",
         "nrows",
         "rowspan",
