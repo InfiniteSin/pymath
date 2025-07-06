@@ -2,12 +2,12 @@
 
 from typing import TYPE_CHECKING
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt  # noqa: F401
 import numpy as np
 from matplotlib.axes import Axes
 
 if TYPE_CHECKING:
-    from matplotlib.figure import Figure
+    from matplotlib.figure import Figure  # noqa: F401
 
 
 class Wave:
@@ -73,17 +73,17 @@ def main() -> None:
     # wl.plot_wave(x=x, ax=plt.gca(), wave=wl.get_wave(x=x, t=0))
     # plt.show()
     # 创建2个波并把它们加起来
-    sampling: int = 100
-    x_range: list[int] = [-10, 10]
-    amplitudes: list[float] = [1.7, 0.8]
-    wavelengths: list[float] = [4, 7, 5]
-    velocities: list[float] = [2, 1.5]
+    # sampling: int = 100
+    # x_range: list[int] = [-10, 10]
+    # amplitudes: list[float] = [1.7, 0.8]
+    # wavelengths: list[float] = [4, 7, 5]
+    # velocities: list[float] = [2, 1.5]
 
-    x: np.ndarray = np.linspace(x_range[0], x_range[1], sampling)
-    w1: Wave = Wave(amp=amplitudes[0], wl=wavelengths[0], v=velocities[0])
-    w2: Wave = Wave(amp=amplitudes[1], wl=wavelengths[1], v=velocities[1])
+    # x: np.ndarray = np.linspace(x_range[0], x_range[1], sampling)
+    # w1: Wave = Wave(amp=amplitudes[0], wl=wavelengths[0], v=velocities[0])
+    # w2: Wave = Wave(amp=amplitudes[1], wl=wavelengths[1], v=velocities[1])
 
-    fig: Figure = plt.figure()  # noqa: F841
+    # fig: Figure = plt.figure()
     # w1.plot_wave(x=x, ax=plt.gca(), wave=w1.get_wave(x=x, t=0))
     # w2.plot_wave(x=x, ax=plt.gca(), wave=w2.get_wave(x=x, t=0))
     # plt.show()
@@ -92,12 +92,12 @@ def main() -> None:
     # Wave.plot_wave(x=x, ax=plt.gca(), wave=(w2.get_wave(x=x, t=0) + w1.get_wave(x=x, t=0)))
 
     # 绘制不同时间 t 的叠加波运动
-    for time in np.arange(0, 40, 0.2):
-        plt.clf()  # Clear last figure
-        Wave.plot_wave(x=x, ax=plt.gca(), wave=(w2.get_wave(x=x, t=time) + w1.get_wave(x=x, t=time)))
-        plt.ylim(-3, 3)  # Fix the limits on the y-axis
-        plt.pause(0.1)
-    plt.show()
+    # for time in np.arange(0, 40, 0.2):
+    #     plt.clf()  # Clear last figure
+    #     Wave.plot_wave(x=x, ax=plt.gca(), wave=(w2.get_wave(x=x, t=time) + w1.get_wave(x=x, t=time)))
+    #     plt.ylim(-3, 3)  # Fix the limits on the y-axis
+    #     plt.pause(0.1)
+    # plt.show()
 
 
 if __name__ == "__main__":
