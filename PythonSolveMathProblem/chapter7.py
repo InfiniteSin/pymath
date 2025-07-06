@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING
 
-import matplotlib.pyplot as plt  # noqa: F401
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
 
@@ -64,6 +64,31 @@ class Wave:
         ax.plot(x, wave)
 
 
+class ShapeCenter:
+    """Calculate center point of shape."""
+
+    def __init__(self, shape_spots: list[tuple[float]]) -> None:
+        r"""Init array.
+
+        Center Point: $$
+        """
+        self._shape_points = np.array(shape_spots)
+        self._plot_points = np.insert(self._shape_points, self._shape_points.ndim + 1, self._shape_points[0], axis=0)
+
+    def area_cal(self) -> float:
+        r"""Calculate area of the shape."""
+        area: float = 0
+        return area
+
+    def center_point(self) -> np.ndarray:
+        r"""Calculate center point axis of the shape."""
+        center_points: np.ndarray = np.zeros((4, 5))
+        return center_points
+
+    def shape_plot(self, ax: Axes) -> None:
+        """Plot shape and its center point."""
+
+
 def main() -> None:
     """Entry function."""
     # 使用 Numpy 创建波形图(波幅为2, 波长为5, 波速为2, 区间[-10, 10])
@@ -98,6 +123,17 @@ def main() -> None:
     #     plt.ylim(-3, 3)  # Fix the limits on the y-axis
     #     plt.pause(0.1)
     # plt.show()
+
+    # 绘制三角形形心
+    fig, ax = plt.subplots()
+    triangle: np.ndarray = np.array([[1, 1], [3, 1], [2, 3]])
+    center: np.ndarray = np.mean(triangle, axis=0)
+    triangle: np.ndarray = np.insert(triangle, triangle.ndim + 1, triangle[0], axis=0)
+    plt.plot(triangle[:, 0], triangle[:, 1], "r-", marker="o")
+    plt.plot(center[0], center[1], "r-", marker="o")
+    plt.axis("equal")
+
+    plt.show()
 
 
 if __name__ == "__main__":
